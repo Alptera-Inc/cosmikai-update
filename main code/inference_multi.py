@@ -18,15 +18,21 @@ def score_candidates(model, X: np.ndarray, device: torch.device) -> np.ndarray:
 
 def mask_transit(time, flux, period, t0, duration, rng=None):
     """
-    Replace in-transit points with out-of-transit median + noise
-    to avoid creating a flat artificial feature.
+    Replace in-transit points with out-of-transit median + noise.
+
+    Key fix: cap the masking duration so we don't wipe out too much data
+    and accidentally destroy other planets' transits.
     """
     if rng is None:
         rng = np.random.default_rng(12345)
 
     out = flux.copy().astype(np.float32)
+
+    # Cap mask duration (prevents huge BLS duration from masking too much)
+    dur_eff = min(float(duration), 0.10 * float(period))  # at most 10% of the orbit
+
     phase = ((time - t0 + 0.5 * period) % period) - 0.5 * period
-    in_tr = np.abs(phase) < 0.5 * duration
+    in_tr = np.abs(phase) < 0.5 * dur_eff
 
     oot = out[~in_tr]
     med = np.nanmedian(oot) if oot.size > 0 else np.nanmedian(out)
@@ -51,27 +57,15 @@ def is_duplicate_or_harmonic(p, found_periods, frac=0.03):
 
 def detect_multi(
     time, flux, model, device,
-    nbins=512, k=30, dedupe_frac=0.02,
+    nbins=512, k=200, dedupe_frac=0.02,   # bump k so 2nd planet is more likely in the list
     threshold=0.35, max_planets=5,
     related_frac=0.04,
 ):
-    """
-    Multi-planet detector:
-    - BLS proposes candidates
-    - CNN gates candidates by probability
-    - Choose strongest-by-BLS among those passing gates & not harmonic of previous
-    - Mask detected transits and repeat
-
-    Power gates:
-    - Strict on first detection
-    - Looser on later detections (helps recover weaker second planets)
-    """
+    first_power = None
     residual = flux.astype(np.float32).copy()
     found = []
     found_periods = []
     rng = np.random.default_rng(2024)
-
-    initial_best_power = None
 
     for _ in range(max_planets):
         cands = bls_topk(time, residual, k=k, dedupe_frac=dedupe_frac)
@@ -84,32 +78,37 @@ def detect_multi(
         probs = score_candidates(model, X, device)
 
         best_power_iter = max(float(c.power) for c in cands)
-        if initial_best_power is None:
-            initial_best_power = best_power_iter
 
-        # 1) CNN probability gate (optionally looser after first planet)
-        thr = threshold if len(found) == 0 else max(0.25, threshold - 0.10)
-        idxs = [i for i in range(len(cands)) if float(probs[i]) >= thr]
-        if not idxs:
-            break
+        ratio = best_power_iter / (first_power if first_power else best_power_iter)
+        print(f"[iter] found={len(found)} best_power={best_power_iter:.3e} ratio_to_first={ratio:.3f}")
 
-        # 2) Power gates: strict for first detection, looser for later detections
-        if len(found) == 0:
-            pfi = 0.60  # >= 60% of this-iteration best power
-            pfo = 0.40  # >= 40% of initial best power
+        # Set baseline power from the first iteration
+        if first_power is None:
+            first_power = best_power_iter
         else:
-            pfi = 0.45  # looser after first planet
-            pfo = 0.25
+            # Only stop early AFTER we've already found 2 planets
+            # After you’ve found 2 planets, stop if best peak is < 10% of the first
+            if len(found) >= 2 and best_power_iter < 0.10 * first_power:
+                break
 
-        idxs = [
-            i for i in idxs
-            if float(cands[i].power) >= pfi * best_power_iter
-            and float(cands[i].power) >= pfo * initial_best_power
-        ]
-        if not idxs:
-            break
+        # ---------- Candidate pool selection ----------
+        if len(found) == 0:
+            # First planet: require CNN confidence
+            idxs = [i for i in range(len(cands)) if float(probs[i]) >= threshold]
+            # Strong power gate for first detection
+            idxs = [i for i in idxs if float(cands[i].power) >= 0.60 * best_power_iter]
+            if not idxs:
+                break
+        else:
+            # Later planets: DO NOT require CNN to be high (model may be unsure)
+            # Use BLS to propose; CNN becomes "confidence score"
+            idxs = list(range(len(cands)))
+            # Looser power gate so weaker second planets survive
+            idxs = [i for i in idxs if float(cands[i].power) >= 0.20 * best_power_iter]
+            if not idxs:
+                break
 
-        # Prefer strongest periodic evidence among those that pass the gates
+        # Prefer strongest periodic evidence
         idxs.sort(key=lambda i: float(cands[i].power), reverse=True)
 
         chosen = None
@@ -125,7 +124,7 @@ def detect_multi(
 
         c = cands[chosen]
         found.append({
-            "prob": float(probs[chosen]),
+            "prob": float(probs[chosen]),          # confidence only after first planet
             "period": float(c.period),
             "t0": float(c.t0),
             "duration": float(c.duration),
