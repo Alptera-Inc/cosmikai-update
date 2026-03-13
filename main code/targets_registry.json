@@ -1,0 +1,940 @@
+{
+  "TIC 1000606070": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:20:02.119482Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 103233670": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:08.753689Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 103233895": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:16:18.052445Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 103234091": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:17:37.869698Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 103234358": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:17:06.809861Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 103234382": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:14:02.816470Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 103609833": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:16:10.944782Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 103610160": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:17:51.075849Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 103610168": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:41.562341Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 145891615": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:45.517704Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 145891806": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:57.090088Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 145952886": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:55.716000Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 145952889": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:40.749132Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 145953112": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:49.683802Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 145953234": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:59.912845Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 145998236": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:46.706619Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 145998331": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:51.826346Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 145998345": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:58.335782Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 145998892": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:48.686419Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 146043670": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:54.268550Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 146043726": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:43.191662Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 146043787": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:44.430029Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 146043841": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:39.624948Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 146043985": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:41.813979Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 146044087": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:50.739467Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 146104716": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:52.834794Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 146105025": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:47.693775Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172181079": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:14:33.997876Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172182007": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:21.328548Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172182423": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:17:20.885778Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172567041": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:14:53.351235Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172567521": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:00.960257Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172567755": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:33.871644Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172568012": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:27.564686Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172568286": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:15:13.288677Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172569253": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:15:06.380662Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172569775": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:15:51.629465Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172569868": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:16:41.678681Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172570167": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:14:44.850543Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172570263": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:02.502155Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172676408": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:17:41.148208Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172676732": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:17:55.987716Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172677384": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:15:59.037487Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172677513": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:14:53.819174Z",
+    "mission": "TESS",
+    "n_files": 6,
+    "ok": true
+  },
+  "TIC 172677854": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:15:28.386958Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172677884": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:51.712704Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172677942": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:15:23.365626Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172678105": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:16:23.297918Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172678483": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:15:39.013791Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172678732": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:14:08.067085Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 172679182": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:16:31.604952Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 173075251": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:15:19.876595Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 173075327": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:16:04.318424Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 173075535": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:16.224588Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 173075638": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:14:16.395992Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 173075977": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:14:37.392858Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 173076046": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:17:30.236995Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 173076411": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:17:11.698855Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 1877707376": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:15:44.661101Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217816300": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:39.125299Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217824127": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:01.242683Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217826638": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:32.743923Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217831930": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:30.778862Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217835176": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:24.552505Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217836311": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:05.107134Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217903758": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:27.797565Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217903770": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:22.801949Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217907295": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:26.225588Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217908031": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:46.432417Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217908589": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:11.791195Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217908612": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:37.587550Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217913273": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:44.531842Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217913506": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:48.138062Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217914095": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:22.478733Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217915300": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:15.543547Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217916383": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:34.590095Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217918000": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:37.357463Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217918017": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:26.183098Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217918027": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:54.564593Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217918121": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:20.472582Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 217920763": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:19.037675Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218593075": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:35.982655Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218596047": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:34.286323Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218598827": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:40.766277Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218602915": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:46.258316Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218602923": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:57.490783Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218602949": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:13.487933Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218602994": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:28.412251Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218605375": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:06.762150Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218612564": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:16.056420Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218613080": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:20.800360Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218614456": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:39.760299Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218616341": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:32.679637Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218618130": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:59.639718Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218619601": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:12.925680Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218619637": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:10.142597Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218622390": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:10.685057Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218715895": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:24.274797Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218720699": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:18.007643Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218720702": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:17.280950Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218724441": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:08.460030Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218725362": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:30.990253Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218732649": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:03.017525Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 218833654": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:14.466630Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 28157278": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:20:06.292089Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 28158276": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:20:09.532868Z",
+    "mission": "TESS",
+    "n_files": 1,
+    "ok": true
+  },
+  "TIC 28158285": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:20:04.024694Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 28172184": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:20:07.216203Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 328684661": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:17:44.615628Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 328684696": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:54.931767Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 328684742": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:17:47.876023Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 328684810": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:58.133753Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 328684839": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:15:33.452488Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 328684950": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:16:51.074872Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 328685039": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:14:24.781753Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 328685049": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:14:11.860640Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 328685368": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:18:48.244127Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 398570123": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:20:12.351839Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 400155113": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:33.033628Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 400155171": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:16.605921Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 400155179": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:30.009107Z",
+    "mission": "TESS",
+    "n_files": 2,
+    "ok": true
+  },
+  "TIC 40040039": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:16:58.287352Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 401500750": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:29.647007Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 420593584": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:38.420050Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 420593598": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:12.723691Z",
+    "mission": "TESS",
+    "n_files": 2,
+    "ok": true
+  },
+  "TIC 428797451": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:20.292607Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 428811938": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:26.409948Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 428814885": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:19:23.368297Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 4550614": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:42.873702Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 4550846": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:41.515535Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 4551083": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:12:43.404364Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 4648049": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:51.880634Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 4648528": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:11:29.387414Z",
+    "mission": "TESS",
+    "n_files": 0,
+    "ok": false
+  },
+  "TIC 610766984": {
+    "author": "SPOC",
+    "checked_at": "2026-03-13T02:20:19.119378Z",
+    "mission": "TESS",
+    "n_files": 4,
+    "ok": true
+  }
+}

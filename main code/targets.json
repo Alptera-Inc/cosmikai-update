@@ -1,0 +1,4 @@
+{
+  "TIC 123456789": {"ok": true, "n_files": 12},
+  "TIC 987654321": {"ok": false, "error": "No data found"}
+}

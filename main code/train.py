@@ -9,6 +9,14 @@ from torch.utils.data import DataLoader
 from dataset import CandidateDataset
 from model import SmallCNN  # your existing model.py
 
+import json
+
+from pathlib import Path
+
+def load_ok_targets_from_registry(path="targets_registry.json"):
+    with open(path, "r", encoding="utf-8") as f:
+        reg = json.load(f)
+    return [t for t, info in reg.items() if info.get("ok") is True]
 
 def compute_pos_weight_from_y(y: torch.Tensor) -> torch.Tensor:
     """
@@ -62,20 +70,22 @@ def main():
     # -----------------------
     # Settings you can tweak
     # -----------------------
-    all_targets = [
-        "Pi Mensae",
-        "TOI 700",
-        "HD 209458",
-        # Add more targets as you go (biggest improvement you can make).
-    ]
+    cache_dir = Path("cache")
 
-    cache_dir = "cache"
+    cache_dir_path = Path(cache_dir)
+    cache_dir_path.mkdir(parents=True, exist_ok=True)
+
+    n_cached = len(list(cache_dir_path.glob("*.npz")))
+    print("Cached .npz files:", n_cached)
+
+    all_targets = load_ok_targets_from_registry("targets_registry.json")
+
     mission = "TESS"
     author = "SPOC"
     download_all = False  # keep fast while developing (one file)
     nbins = 512
     k = 15
-    n_augs = 20           # increase to generate more samples per star
+    n_augs = 2           # increase to generate more samples per star
     dedupe_frac = 0.02
 
     batch_size = 64
@@ -99,7 +109,8 @@ def main():
     targets = all_targets.copy()
     np_rng.shuffle(targets)
 
-    n_val_targets = max(1, int(len(targets) * val_target_frac))
+    n_val_targets = max(2, int(len(targets) * val_target_frac))
+    n_val_targets = min(n_val_targets, len(targets) - 2)  # keep at least 2 train targets
     val_targets = targets[:n_val_targets]
     train_targets = targets[n_val_targets:]
 
