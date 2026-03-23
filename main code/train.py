@@ -14,9 +14,49 @@ import json
 from pathlib import Path
 
 def load_ok_targets_from_registry(path="targets_registry.json"):
+    path = Path(path)
+    if not path.exists():
+        return None
+
     with open(path, "r", encoding="utf-8") as f:
         reg = json.load(f)
+
     return [t for t, info in reg.items() if info.get("ok") is True]
+
+
+def load_targets_from_cache_dir(cache_dir: Path):
+    """
+    Recover target names from cached star files like:
+    TIC_123456789_TESS_SPOC_nb512_k15_seed42_aug0.npz
+    """
+    targets = set()
+
+    for p in cache_dir.glob("*.npz"):
+        name = p.stem
+
+        m = re.match(r"(.+?)_TESS_SPOC_nb\d+_k\d+_seed\d+_aug\d+$", name)
+        if m:
+            targets.add(m.group(1))
+
+    return sorted(targets)
+
+
+def load_training_targets(registry_path="targets_registry.json", cache_dir="cache"):
+    cache_dir = Path(cache_dir)
+
+    targets = load_ok_targets_from_registry(registry_path)
+    if targets is not None and len(targets) > 0:
+        print(f"Loaded {len(targets)} targets from {registry_path}")
+        return targets
+
+    targets = load_targets_from_cache_dir(cache_dir)
+    if len(targets) > 0:
+        print(f"Registry missing; recovered {len(targets)} targets from {cache_dir}")
+        return targets
+
+    raise FileNotFoundError(
+        f"Could not find {registry_path}, and no cached target .npz files were found in {cache_dir}"
+    )
 
 def compute_pos_weight_from_y(y: torch.Tensor) -> torch.Tensor:
     """
@@ -78,7 +118,7 @@ def main():
     n_cached = len(list(cache_dir_path.glob("*.npz")))
     print("Cached .npz files:", n_cached)
 
-    all_targets = load_ok_targets_from_registry("targets_registry.json")
+    all_targets = load_training_targets("targets_registry.json", raw_cache_dir)
 
     mission = "TESS"
     author = "SPOC"
