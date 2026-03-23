@@ -6,57 +6,9 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
-from dataset import CandidateDataset
-from model import SmallCNN  # your existing model.py
+from model import SmallCNN
+from cached_dataset import CachedNPZDataset
 
-import json
-
-from pathlib import Path
-
-def load_ok_targets_from_registry(path="targets_registry.json"):
-    path = Path(path)
-    if not path.exists():
-        return None
-
-    with open(path, "r", encoding="utf-8") as f:
-        reg = json.load(f)
-
-    return [t for t, info in reg.items() if info.get("ok") is True]
-
-
-def load_targets_from_cache_dir(cache_dir: Path):
-    """
-    Recover target names from cached star files like:
-    TIC_123456789_TESS_SPOC_nb512_k15_seed42_aug0.npz
-    """
-    targets = set()
-
-    for p in cache_dir.glob("*.npz"):
-        name = p.stem
-
-        m = re.match(r"(.+?)_TESS_SPOC_nb\d+_k\d+_seed\d+_aug\d+$", name)
-        if m:
-            targets.add(m.group(1))
-
-    return sorted(targets)
-
-
-def load_training_targets(registry_path="targets_registry.json", cache_dir="cache"):
-    cache_dir = Path(cache_dir)
-
-    targets = load_ok_targets_from_registry(registry_path)
-    if targets is not None and len(targets) > 0:
-        print(f"Loaded {len(targets)} targets from {registry_path}")
-        return targets
-
-    targets = load_targets_from_cache_dir(cache_dir)
-    if len(targets) > 0:
-        print(f"Registry missing; recovered {len(targets)} targets from {cache_dir}")
-        return targets
-
-    raise FileNotFoundError(
-        f"Could not find {registry_path}, and no cached target .npz files were found in {cache_dir}"
-    )
 
 def compute_pos_weight_from_y(y: torch.Tensor) -> torch.Tensor:
     """
@@ -98,11 +50,19 @@ def eval_metrics(model, loader, device):
     return acc, precision, recall
 
 
-def count_pos_neg(ds: CandidateDataset):
-    # CandidateDataset stores tensors .y
-    y = ds.y
-    pos = int((y == 1).sum().item())
-    neg = int((y == 0).sum().item())
+def count_pos_neg(ds: CachedNPZDataset):
+    """
+    Count positives/negatives in a CachedNPZDataset.
+    This iterates through the dataset once, which is fine for small/medium caches.
+    If your cache becomes huge, we can optimize this by precomputing counts per file.
+    """
+    pos = 0
+    neg = 0
+    for _x, y in ds:
+        if float(y.item()) >= 0.5:
+            pos += 1
+        else:
+            neg += 1
     return pos, neg
 
 
@@ -110,29 +70,16 @@ def main():
     # -----------------------
     # Settings you can tweak
     # -----------------------
-    cache_dir = Path("cache")
-
-    cache_dir_path = Path(cache_dir)
-    cache_dir_path.mkdir(parents=True, exist_ok=True)
-
-    n_cached = len(list(cache_dir_path.glob("*.npz")))
-    print("Cached .npz files:", n_cached)
-
-    all_targets = load_training_targets("targets_registry.json", raw_cache_dir)
-
-    mission = "TESS"
-    author = "SPOC"
-    download_all = False  # keep fast while developing (one file)
+    cache_dir = "cache"
     nbins = 512
-    k = 15
-    n_augs = 2           # increase to generate more samples per star
-    dedupe_frac = 0.02
 
     batch_size = 64
     epochs = 12
     lr = 1e-3
-    val_target_frac = 0.4
+    val_target_frac = 0.3
     seed = 42
+
+    preload = False  # True loads all cached X/y into RAM (faster, uses more memory)
 
     # -----------------------
     # Repro + device
@@ -144,48 +91,30 @@ def main():
     print("Device:", device)
 
     # -----------------------
-    # Split by TARGETS (not by candidates)
+    # Load cached dataset (NO downloading)
     # -----------------------
-    targets = all_targets.copy()
-    np_rng.shuffle(targets)
+    full_ds = CachedNPZDataset(cache_dir=cache_dir, preload=False)
 
-    n_val_targets = max(2, int(len(targets) * val_target_frac))
-    n_val_targets = min(n_val_targets, len(targets) - 2)  # keep at least 2 train targets
+    targets = full_ds.get_targets()
+    if len(targets) < 2:
+        raise ValueError(
+            f"Need at least 2 targets in cache to split train/val. Found: {len(targets)}"
+        )
+
+    np_rng.shuffle(targets)
+    n_val_targets = max(1, int(len(targets) * val_target_frac))
+    n_val_targets = min(n_val_targets, len(targets) - 1)
+
     val_targets = targets[:n_val_targets]
     train_targets = targets[n_val_targets:]
 
-    print("Train targets:", train_targets)
-    print("Val targets:", val_targets)
+    print("Train targets:", len(train_targets))
+    print("Val targets:", len(val_targets))
 
-    # -----------------------
-    # Build datasets (separate seeds so val injections differ)
-    # -----------------------
-    train_ds = CandidateDataset(
-        targets=train_targets,
-        cache_dir=cache_dir,
-        mission=mission,
-        author=author,
-        download_all=download_all,
-        nbins=nbins,
-        k=k,
-        dedupe_frac=dedupe_frac,
-        seed=seed,
-        n_augs=n_augs,
-    )
+    train_ds = CachedNPZDataset(cache_dir=cache_dir, allowed_targets=train_targets, preload=preload)
+    val_ds = CachedNPZDataset(cache_dir=cache_dir, allowed_targets=val_targets, preload=preload)
 
-    val_ds = CandidateDataset(
-        targets=val_targets,
-        cache_dir=cache_dir,
-        mission=mission,
-        author=author,
-        download_all=download_all,
-        nbins=nbins,
-        k=k,
-        dedupe_frac=dedupe_frac,
-        seed=seed + 999,  # different injections for validation
-        n_augs=n_augs,
-    )
-
+    # Optional: counts (can be slow if cache is very large)
     train_pos, train_neg = count_pos_neg(train_ds)
     val_pos, val_neg = count_pos_neg(val_ds)
     print("Train pos/neg:", train_pos, train_neg)
@@ -197,13 +126,15 @@ def main():
     # -----------------------
     # Model
     # -----------------------
-    # Your SmallCNN apparently expects positional nbins (Fix A worked)
     model = SmallCNN(nbins).to(device)
 
     # -----------------------
     # Loss (pos_weight from TRAIN only)
     # -----------------------
-    pos_weight = compute_pos_weight_from_y(train_ds.y).to(device)
+    # Build y tensor once for pos_weight (faster than recounting each batch)
+    y_train = torch.tensor([float(y.item()) for _x, y in train_ds], dtype=torch.float32)
+    pos_weight = compute_pos_weight_from_y(y_train).to(device)
+
     print("pos_weight:", float(pos_weight.item()))
     loss_fn = torch.nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
@@ -251,7 +182,6 @@ def main():
             f"val acc {val_acc:.3f} P {val_prec:.3f} R {val_rec:.3f}"
         )
 
-        # Save best by validation recall (prioritize finding planets)
         if val_rec > best_val_recall:
             best_val_recall = val_rec
             torch.save(
@@ -263,11 +193,7 @@ def main():
                     "pos_weight": float(pos_weight.item()),
                     "train_targets": train_targets,
                     "val_targets": val_targets,
-                    "k": k,
-                    "n_augs": n_augs,
-                    "dedupe_frac": dedupe_frac,
-                    "mission": mission,
-                    "author": author,
+                    "cache_dir": cache_dir,
                 },
                 best_path,
             )
