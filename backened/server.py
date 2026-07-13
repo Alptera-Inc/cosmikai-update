@@ -95,6 +95,10 @@ class _AppState:
 
 _state = _AppState()
 
+# Increment whenever product selection or preprocessing changes in a way that
+# makes existing prediction-cache rows unsafe to reuse.
+PIPELINE_VERSION = "official-products-v1"
+
 
 # ---------------------------------------------------------------------------
 # Database — initialisation and helpers
@@ -113,6 +117,7 @@ CREATE TABLE IF NOT EXISTS predictions (
     num_datapoints         INTEGER,
     processing_time        REAL,
     timestamp              TEXT    NOT NULL,
+    pipeline_version       TEXT    NOT NULL,
     UNIQUE(star_name, mission)
 );
 """
@@ -126,6 +131,13 @@ async def _init_db() -> None:
     db_path.parent.mkdir(parents=True, exist_ok=True)
     async with aiosqlite.connect(db_path) as db:
         await db.execute(_CREATE_TABLE_SQL)
+        async with db.execute("PRAGMA table_info(predictions)") as cur:
+            columns = {row[1] for row in await cur.fetchall()}
+        if "pipeline_version" not in columns:
+            await db.execute(
+                "ALTER TABLE predictions ADD COLUMN pipeline_version "
+                "TEXT NOT NULL DEFAULT 'legacy-unfiltered'"
+            )
         await db.commit()
     log.info("SQLite database ready at %s", db_path.resolve())
 
@@ -145,8 +157,9 @@ async def _get_cached(star_name: str, mission: str) -> Optional[dict]:
     async with aiosqlite.connect(DB_PATH) as db:
         db.row_factory = aiosqlite.Row
         async with db.execute(
-            "SELECT * FROM predictions WHERE star_name = ? AND mission = ?",
-            (star_name, mission),
+            "SELECT * FROM predictions "
+            "WHERE star_name = ? AND mission = ? AND pipeline_version = ?",
+            (star_name, mission, PIPELINE_VERSION),
         ) as cur:
             row = await cur.fetchone()
             return dict(row) if row else None
@@ -170,8 +183,8 @@ async def _save_prediction(data: dict) -> None:
             INSERT OR REPLACE INTO predictions
                 (star_name, mission, score, period_days, verdict,
                  transit_depth_estimate, duration_estimate, num_datapoints,
-                 processing_time, timestamp)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 processing_time, timestamp, pipeline_version)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 data["star_name"],
@@ -184,6 +197,7 @@ async def _save_prediction(data: dict) -> None:
                 data.get("num_datapoints"),
                 data.get("processing_time"),
                 data["timestamp"],
+                PIPELINE_VERSION,
             ),
         )
         await db.commit()
