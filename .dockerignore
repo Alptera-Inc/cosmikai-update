@@ -1,0 +1,11 @@
+.git
+.gitignore
+.agents
+.codex
+venv
+.venv
+**/__pycache__
+**/*.py[cod]
+frontend
+backened/stars.db
+*.log

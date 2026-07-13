@@ -1,0 +1,30 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backened/Dockerfile
+    container_name: cosmikai-backend
+    restart: unless-stopped
+    environment:
+      COSMIKAI_DB_PATH: /app/data/stars.db
+      COSMIKAI_CORS_ORIGINS: https://api.flyingwaffle.ca,https://visuals.flyingwaffle.ca
+    volumes:
+      - cosmikai-data:/app/data
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: cosmikai-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5180:80"
+      - "5173:80"
+
+volumes:
+  cosmikai-data:
