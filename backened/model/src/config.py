@@ -73,7 +73,7 @@ FLATTEN_SIGMA: int = int(os.environ.get("COSMIKAI_FLATTEN_SIGMA", "2"))
 VERDICT_THRESHOLD: float = float(os.environ.get("COSMIKAI_VERDICT_THRESHOLD", "0.5"))
 
 #: Seconds before a pipeline run is cancelled (MAST can be slow)
-REQUEST_TIMEOUT: float = float(os.environ.get("COSMIKAI_REQUEST_TIMEOUT", "180.0"))
+REQUEST_TIMEOUT: float = float(os.environ.get("COSMIKAI_REQUEST_TIMEOUT", "380.0"))
 
 # ---------------------------------------------------------------------------
 # Server settings

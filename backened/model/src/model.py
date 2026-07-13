@@ -2,9 +2,9 @@
 CosmiKAI — TransitCNN Model Definition
 ========================================
 1-D Convolutional Neural Network designed for edge deployment onboard a
-CubeSat-class satellite.  The architecture is intentionally compact (~89 K
-parameters, 288 KB serialised) while achieving 99.72 % AUPRC on the
-held-out Kepler validation set.
+CubeSat-class satellite. The architecture is intentionally compact (~72K
+parameters, 288 KB serialised) while achieving 81.17% AUPRC on real
+confirmed Kepler transit data.
 
 Input
 -----
@@ -13,17 +13,17 @@ where L = 512 by default.
 
 Output
 ------
-Raw logit of shape (B,).  Apply ``torch.sigmoid`` to obtain a probability
-in [0, 1].  Scores ≥ the configured threshold are classified as
+Raw logit of shape (B,). Apply ``torch.sigmoid`` to obtain a probability
+in [0, 1]. Scores >= the configured threshold are classified as
 TRANSIT_DETECTED.
 
 Architecture summary
 --------------------
-    Conv1d(1→32, k=7) → ReLU → MaxPool(2)      # feature extraction
-    Conv1d(32→64, k=7) → ReLU → MaxPool(2)
-    Conv1d(64→128, k=5) → ReLU
-    AdaptiveAvgPool1d(1)                         # global pooling → (B, 128, 1)
-    Flatten → Linear(128→128) → ReLU → Dropout(0.3) → Linear(128→1)
+    Conv1d(1->32, k=7)  -> ReLU                  # coarse edge/slope features
+    Conv1d(32->64, k=7) -> ReLU                  # mid-level dip patterns
+    Conv1d(64->128, k=5) -> ReLU                 # high-level transit shape
+    AdaptiveAvgPool1d(1)                          # collapse to (B, 128, 1)
+    Flatten -> Linear(128->128) -> ReLU -> Dropout(0.3) -> Linear(128->1)
 
 Usage
 -----
@@ -35,7 +35,7 @@ Usage
     model.eval()
 
     with torch.no_grad():
-        logit = model(x)          # x: (B, 512)
+        logit = model(x)            # x: (B, 512)
         score = torch.sigmoid(logit)
 """
 
@@ -51,40 +51,50 @@ class TransitCNN(nn.Module):
 
     Parameters
     ----------
-    L : int
-        Expected input sequence length.  Must match the ``N_BINS`` value
-        used during preprocessing (default 512).  The ``AdaptiveAvgPool1d``
-        layer makes the network length-agnostic in practice, but training
-        and the standardisation step both assume L = 512.
+    dropout : float
+        Dropout probability before the final classification layer.
+        Default 0.3 to prevent overfitting on the moderate-sized
+        training set (~3,700 samples).
+
+    Notes
+    -----
+    Layer names (``conv``, ``fc``) must match the trained weight file.
+    Do NOT rename these without retraining the model.
     """
 
-    def __init__(self, L: int = 512) -> None:
+    def __init__(self, dropout: float = 0.3) -> None:
         super().__init__()
 
-        self.feature_extractor = nn.Sequential(
-            # Block 1 — coarse features
+        # ── Feature extraction backbone ──────────────────────────────
+        # Three Conv1d blocks with increasing filter counts extract
+        # progressively higher-level features from the 1D light curve.
+        # AdaptiveAvgPool collapses the sequence dimension so the
+        # classifier input is independent of the original length.
+        self.conv = nn.Sequential(
+            # Block 1 — detect simple edges and slopes in the light curve
             nn.Conv1d(1, 32, kernel_size=7, padding=3),
-            nn.ReLU(inplace=True),
-            nn.MaxPool1d(kernel_size=2),
+            nn.ReLU(),
 
-            # Block 2 — mid-level patterns
+            # Block 2 — capture transit dip shapes and broader patterns
             nn.Conv1d(32, 64, kernel_size=7, padding=3),
-            nn.ReLU(inplace=True),
-            nn.MaxPool1d(kernel_size=2),
+            nn.ReLU(),
 
-            # Block 3 — high-level transit shape
+            # Block 3 — recognise compound transit features
             nn.Conv1d(64, 128, kernel_size=5, padding=2),
-            nn.ReLU(inplace=True),
+            nn.ReLU(),
 
-            # Global pooling → fixed-size representation regardless of L
+            # Global average pooling — fixed-size output regardless of input length
             nn.AdaptiveAvgPool1d(1),
         )
 
-        self.classifier = nn.Sequential(
+        # ── Classification head ──────────────────────────────────────
+        # Maps the 128-dim feature vector to a single transit/no-transit logit.
+        # Dropout reduces overfitting given the moderate dataset size.
+        self.fc = nn.Sequential(
             nn.Flatten(),
             nn.Linear(128, 128),
-            nn.ReLU(inplace=True),
-            nn.Dropout(p=0.3),
+            nn.ReLU(),
+            nn.Dropout(p=dropout),
             nn.Linear(128, 1),
         )
 
@@ -95,17 +105,21 @@ class TransitCNN(nn.Module):
         Parameters
         ----------
         x : torch.Tensor
-            Shape ``(B, L)`` — batch of standardised phase-folded light curves.
+            Shape ``(B, L)`` or ``(B, 1, L)`` — batch of standardised
+            phase-folded light curves.
 
         Returns
         -------
         torch.Tensor
-            Shape ``(B,)`` — raw logits.  Apply ``torch.sigmoid`` for
+            Shape ``(B,)`` — raw logits. Apply ``torch.sigmoid`` for
             classification probabilities.
         """
-        x = x.unsqueeze(1)                  # (B, L) → (B, 1, L)
-        features = self.feature_extractor(x) # (B, 128, 1)
-        return self.classifier(features).squeeze(1)  # (B,)
+        # Add channel dimension if input is (B, L) instead of (B, 1, L)
+        if x.dim() == 2:
+            x = x.unsqueeze(1)         # (B, L) -> (B, 1, L)
+
+        features = self.conv(x)         # (B, 128, 1)
+        return self.fc(features).squeeze(1)  # (B,)
 
     @property
     def num_parameters(self) -> int:
@@ -128,13 +142,6 @@ def load_model(weights_path: str, device: str = "cpu") -> TransitCNN:
     -------
     TransitCNN
         Model in eval mode with loaded weights.
-
-    Raises
-    ------
-    FileNotFoundError
-        If ``weights_path`` does not exist.
-    RuntimeError
-        If the state-dict is incompatible with the current architecture.
     """
     model = TransitCNN()
     state = torch.load(weights_path, map_location=device, weights_only=True)

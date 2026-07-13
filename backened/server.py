@@ -52,8 +52,6 @@ from backened.model.src.config import (
     BLS_PERIOD_MIN,
     CORS_ORIGINS,
     DB_PATH,
-    FLATTEN_SIGMA,
-    FLATTEN_WINDOW,
     LOG_LEVEL,
     MODEL_PATH,
     MODEL_VERSION,
@@ -65,7 +63,6 @@ from backened.model.src.config import (
 from backened.model.src.mast_fetch import fetch_lightcurve
 from backened.model.src.model import TransitCNN
 from backened.model.src.preprocess import (
-    BLSResult,
     bin_to_fixed_length,
     flatten_flux,
     normalize_flux,
@@ -317,39 +314,30 @@ def _run_pipeline_sync(
         )
 
     # ── 2. Flatten ──────────────────────────────────────────────────────────
-    flux_arr = flatten_flux(flux_arr, window_length=FLATTEN_WINDOW, sigma=FLATTEN_SIGMA)
+    flux_arr = flatten_flux(flux_arr, window=301, polyorder=2)
 
     # ── 3. Normalise ────────────────────────────────────────────────────────
     flux_arr = normalize_flux(flux_arr, method="median")
 
     # ── 4. BLS period search ─────────────────────────────────────────────────
     try:
-        bls: BLSResult = run_bls(
-            time_arr,
-            flux_arr,
-            pmin=BLS_PERIOD_MIN,
-            pmax=BLS_PERIOD_MAX,
-            n_periods=BLS_N_PERIODS,
-        )
+        best_period = run_bls(time_arr, flux_arr, 0.6, 12.0, 5000)
     except Exception as exc:
         raise RuntimeError(f"BLS period search failed: {exc}") from exc
 
-    log.debug(
-        "BLS — period=%.4f d  depth=%.6f  duration=%.4f d  power=%.2f",
-        bls.period, bls.depth, bls.duration, bls.power,
-    )
+    log.debug("BLS — best period=%.4f d", best_period)
 
     # ── 5. Phase fold ────────────────────────────────────────────────────────
-    phase_arr, folded_flux = phase_fold(time_arr, flux_arr, bls.period, bls.t0)
+    phase_arr, folded_flux = phase_fold(time_arr, flux_arr, best_period)
 
     # ── 6. Bin ───────────────────────────────────────────────────────────────
-    binned = bin_to_fixed_length(phase_arr, folded_flux, n_bins=N_BINS)
+    binned = bin_to_fixed_length(phase_arr, folded_flux, n_bins=512)
 
     # ── 7. Standardise — CRITICAL ────────────────────────────────────────────
     # Without this step the model outputs a near-constant ~0.5035 for all
     # inputs regardless of transit signal strength.
-    med = float(np.median(binned))
-    std = float(np.std(binned))
+    med = np.median(binned)
+    std = np.std(binned)
     if std > 1e-10:
         binned = (binned - med) / std
     else:
@@ -379,10 +367,10 @@ def _run_pipeline_sync(
         "star_name": star_name,
         "mission": mission,
         "score": score,
-        "period_days": bls.period,
+        "period_days": float(best_period),
         "verdict": verdict,
-        "transit_depth_estimate": float(abs(bls.depth)),
-        "duration_estimate": float(bls.duration),
+        "transit_depth_estimate": None,
+        "duration_estimate": None,
         "num_datapoints": n_points,
         "processing_time": processing_time,
         "timestamp": datetime.now(timezone.utc).isoformat(),

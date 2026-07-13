@@ -1,9 +1,15 @@
 {
-  "best_auprc": 0.9675858072049038,
-  "total_samples": 7676,
-  "train_samples": 6140,
-  "val_samples": 1536,
-  "unique_stars": 1919,
-  "epochs_trained": 11,
-  "pos_weight": 0.3333333432674408
+  "version": "v3_real_transits",
+  "performance": {
+    "auprc": 0.8117
+  },
+  "training": {
+    "total_samples": 3716,
+    "train_samples": 2972,
+    "val_samples": 744,
+    "training_stars": 1919,
+    "real_positives": 1797,
+    "negatives": 1919,
+    "epochs_trained": 80
+  }
 }
