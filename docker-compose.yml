@@ -8,6 +8,9 @@ services:
     environment:
       COSMIKAI_DB_PATH: /app/data/stars.db
       COSMIKAI_CORS_ORIGINS: https://api.flyingwaffle.ca,https://visuals.flyingwaffle.ca
+      HOME: /tmp
+      XDG_CACHE_HOME: /tmp/.cache
+      MPLCONFIGDIR: /tmp/matplotlib
     volumes:
       - cosmikai-data:/app/data
     ports:

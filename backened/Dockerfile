@@ -11,7 +11,9 @@ RUN pip install --upgrade pip \
     && pip install --index-url https://download.pytorch.org/whl/cpu torch \
     && pip install -r requirements.txt
 
-ENV MPLCONFIGDIR=/tmp/matplotlib
+ENV HOME=/tmp \
+    XDG_CACHE_HOME=/tmp/.cache \
+    MPLCONFIGDIR=/tmp/matplotlib
 
 COPY backened ./backened
 
