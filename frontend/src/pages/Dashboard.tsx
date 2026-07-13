@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  Upload, Search, Sliders, BarChart3, Terminal, Eye,
+  Upload, Search, Sliders, BarChart3, Eye,
   FileUp, CheckCircle2, AlertTriangle, Target, Activity,
-  Loader2, Radio, Clock, Zap, AlertCircle,
+  Loader2, Radio, Clock, Zap, AlertCircle, ChevronDown, ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,24 @@ interface PredictionResult {
   cached: boolean;
   processing_time_seconds: number;
   timestamp: string;
+}
+
+interface PlanetResult {
+  score: number;
+  percentage: number;
+  period_days: number | null;
+  verdict: string;
+  transit_depth_estimate: number | null;
+}
+
+interface MultiPlanetResult {
+  star_name: string;
+  mission: string;
+  planets: PlanetResult[];
+  num_datapoints: number | null;
+  processing_time_seconds: number;
+  timestamp: string;
+  cached?: boolean;
 }
 
 interface HistoryItem {
@@ -125,8 +143,27 @@ const Dashboard = () => {
 
   // Prediction state
   const [isLoading, setIsLoading] = useState(false);
-  const [predictionResult, setPredictionResult] = useState<PredictionResult | null>(null);
+  const [predictionResult, setPredictionResult] = useState<PredictionResult | MultiPlanetResult | null>(null);
   const [predictionError, setPredictionError] = useState<string | null>(null);
+
+  // History expand state
+  const [expandedStars, setExpandedStars] = useState<Set<string>>(new Set());
+  const toggleStar = (name: string) =>
+    setExpandedStars((prev) => {
+      const next = new Set(prev);
+      next.has(name) ? next.delete(name) : next.add(name);
+      return next;
+    });
+
+  // Confidence colour helper
+  const confidenceColor = (pct: number) =>
+    pct >= 70 ? "text-success" : pct >= 40 ? "text-warning" : "text-destructive";
+  const confidenceBg = (pct: number) =>
+    pct >= 70 ? "bg-success" : pct >= 40 ? "bg-warning" : "bg-destructive";
+
+  // Type guard
+  const isMultiPlanet = (r: PredictionResult | MultiPlanetResult): r is MultiPlanetResult =>
+    "planets" in r && Array.isArray((r as MultiPlanetResult).planets);
 
   // Remote data (stats, history, health)
   const { data: statsData } = useQuery<StatsResponse>({
@@ -204,7 +241,7 @@ const Dashboard = () => {
         throw new Error(err.detail ?? `Server error: ${res.status}`);
       }
 
-      const data: PredictionResult = await res.json();
+      const data: PredictionResult | MultiPlanetResult = await res.json();
       setPredictionResult(data);
 
       // Refresh history and stats after a new prediction
@@ -239,8 +276,12 @@ const Dashboard = () => {
             onClick={() => navigate("/")}
             className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
           >
-            <Terminal className="h-5 w-5 text-foreground" />
-            <span className="font-data text-sm font-semibold tracking-wide">COSMIK_AI</span>
+            <img
+              src="/cosmik-ai.png"
+              alt="cosmik.ai"
+              className="h-6 w-6"
+            />
+            <span className="font-data text-sm font-semibold tracking-wide">cosmik.ai</span>
           </div>
           <span className="font-data text-xs text-muted-foreground ml-4">/ DASHBOARD</span>
         </div>
@@ -415,110 +456,220 @@ const Dashboard = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="panel p-6 space-y-5 mt-2"
                 >
-                  {/* Header row */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-data text-xs uppercase tracking-wider text-muted-foreground mb-1">
-                        Detection Result
-                      </p>
-                      <p className="font-data text-sm font-semibold">
-                        {predictionResult.star_name}
-                        <span className="ml-2 text-muted-foreground font-normal">
-                          / {predictionResult.mission}
-                        </span>
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {predictionResult.cached && (
-                        <span className="bg-muted px-2 py-0.5 rounded-md font-data text-[10px] uppercase tracking-wider text-muted-foreground">
-                          CACHED
-                        </span>
-                      )}
-                      <span
-                        className={`px-2 py-1 rounded-md font-data text-[10px] uppercase tracking-wider ${
-                          predictionResult.verdict === "TRANSIT_DETECTED"
-                            ? "bg-success/15 text-success"
-                            : "bg-warning/15 text-warning"
-                        }`}
-                      >
-                        {predictionResult.verdict.replace("_", " ")}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Score */}
-                  <div className="flex items-end gap-3">
-                    <span
-                      className={`font-data text-4xl font-semibold ${
-                        predictionResult.verdict === "TRANSIT_DETECTED"
-                          ? "text-success"
-                          : "text-warning"
-                      }`}
-                    >
-                      {predictionResult.percentage.toFixed(1)}%
-                    </span>
-                    <span className="font-data text-xs text-muted-foreground mb-1">
-                      transit confidence
-                    </span>
-                  </div>
-
-                  {/* Score bar */}
-                  <div className="w-full bg-muted rounded-full h-1.5">
-                    <div
-                      className={`h-1.5 rounded-full transition-all duration-700 ${
-                        predictionResult.verdict === "TRANSIT_DETECTED"
-                          ? "bg-success"
-                          : "bg-warning"
-                      }`}
-                      style={{ width: `${predictionResult.percentage}%` }}
-                    />
-                  </div>
-
-                  {/* Metrics grid */}
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                    {[
-                      {
-                        icon: Radio,
-                        label: "Period",
-                        value: predictionResult.period_days != null
-                          ? `${predictionResult.period_days.toFixed(3)} d`
-                          : "—",
-                      },
-                      {
-                        icon: Zap,
-                        label: "Transit Depth",
-                        value: predictionResult.transit_depth_estimate != null
-                          ? `${(predictionResult.transit_depth_estimate * 100).toFixed(4)}%`
-                          : "—",
-                      },
-                      {
-                        icon: Activity,
-                        label: "Datapoints",
-                        value: predictionResult.num_datapoints != null
-                          ? predictionResult.num_datapoints.toLocaleString()
-                          : "—",
-                      },
-                      {
-                        icon: Clock,
-                        label: "Proc. Time",
-                        value: `${predictionResult.processing_time_seconds.toFixed(1)}s`,
-                      },
-                    ].map((m) => (
-                      <div key={m.label} className="bg-muted p-3 rounded-md">
-                        <div className="flex items-center gap-1 mb-1">
-                          <m.icon className="h-3 w-3 text-muted-foreground" />
-                          <p className="font-data text-[10px] text-muted-foreground uppercase tracking-wider">
-                            {m.label}
+                  {isMultiPlanet(predictionResult) ? (
+                    <>
+                      {/* Star System Header */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-data text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                            Detection Result
+                          </p>
+                          <p className="font-data text-sm font-semibold">
+                            {predictionResult.star_name}
+                            <span className="ml-2 text-muted-foreground font-normal">
+                              / {predictionResult.mission}
+                            </span>
                           </p>
                         </div>
-                        <p className="font-data text-sm font-semibold">{m.value}</p>
+                        <div className="flex items-center gap-2">
+                          {predictionResult.cached && (
+                            <span className="bg-muted px-2 py-0.5 rounded-md font-data text-[10px] uppercase tracking-wider text-muted-foreground">
+                              CACHED
+                            </span>
+                          )}
+                          <span className="bg-muted px-2 py-0.5 rounded-md font-data text-[10px] uppercase tracking-wider text-muted-foreground">
+                            {predictionResult.planets.length} planet{predictionResult.planets.length !== 1 ? "s" : ""} detected
+                          </span>
+                        </div>
                       </div>
-                    ))}
-                  </div>
 
-                  <p className="font-data text-[10px] text-muted-foreground">
-                    {new Date(predictionResult.timestamp).toLocaleString()} UTC
-                  </p>
+                      {/* Planet Cards */}
+                      <div className="space-y-3">
+                        {predictionResult.planets.map((planet, i) => (
+                          <div key={i} className="bg-muted rounded-md p-4 space-y-3 border border-border">
+                            <div className="flex items-center justify-between">
+                              <p className="font-data text-xs uppercase tracking-wider">
+                                Planet Candidate {i + 1}
+                              </p>
+                              <span
+                                className={`px-2 py-0.5 rounded-md font-data text-[10px] uppercase tracking-wider ${
+                                  planet.verdict === "TRANSIT_DETECTED"
+                                    ? "bg-success/15 text-success"
+                                    : "bg-warning/15 text-warning"
+                                }`}
+                              >
+                                {planet.verdict.replace("_", " ")}
+                              </span>
+                            </div>
+                            <div className="flex items-end gap-3">
+                              <span className={`font-data text-3xl font-semibold ${confidenceColor(planet.percentage)}`}>
+                                {planet.percentage.toFixed(1)}%
+                              </span>
+                              <span className="font-data text-xs text-muted-foreground mb-1">transit confidence</span>
+                            </div>
+                            <div className="w-full bg-background rounded-full h-1">
+                              <div
+                                className={`h-1 rounded-full transition-all duration-700 ${confidenceBg(planet.percentage)}`}
+                                style={{ width: `${planet.percentage}%` }}
+                              />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div className="bg-background rounded-md p-2 border border-border">
+                                <div className="flex items-center gap-1 mb-1">
+                                  <Radio className="h-3 w-3 text-muted-foreground" />
+                                  <p className="font-data text-[10px] text-muted-foreground uppercase tracking-wider">Period</p>
+                                </div>
+                                <p className="font-data text-sm font-semibold">
+                                  {planet.period_days != null ? `${planet.period_days.toFixed(3)} d` : "—"}
+                                </p>
+                              </div>
+                              <div className="bg-background rounded-md p-2 border border-border">
+                                <div className="flex items-center gap-1 mb-1">
+                                  <Zap className="h-3 w-3 text-muted-foreground" />
+                                  <p className="font-data text-[10px] text-muted-foreground uppercase tracking-wider">Transit Depth</p>
+                                </div>
+                                <p className="font-data text-sm font-semibold">
+                                  {planet.transit_depth_estimate != null
+                                    ? `${(planet.transit_depth_estimate * 100).toFixed(4)}%`
+                                    : "—"}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Footer metrics */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-muted p-3 rounded-md">
+                          <div className="flex items-center gap-1 mb-1">
+                            <Activity className="h-3 w-3 text-muted-foreground" />
+                            <p className="font-data text-[10px] text-muted-foreground uppercase tracking-wider">Datapoints</p>
+                          </div>
+                          <p className="font-data text-sm font-semibold">
+                            {predictionResult.num_datapoints != null
+                              ? predictionResult.num_datapoints.toLocaleString()
+                              : "—"}
+                          </p>
+                        </div>
+                        <div className="bg-muted p-3 rounded-md">
+                          <div className="flex items-center gap-1 mb-1">
+                            <Clock className="h-3 w-3 text-muted-foreground" />
+                            <p className="font-data text-[10px] text-muted-foreground uppercase tracking-wider">Proc. Time</p>
+                          </div>
+                          <p className="font-data text-sm font-semibold">
+                            {predictionResult.processing_time_seconds.toFixed(1)}s
+                          </p>
+                        </div>
+                      </div>
+                      <p className="font-data text-[10px] text-muted-foreground">
+                        {new Date(predictionResult.timestamp).toLocaleString()} UTC
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      {/* Header row */}
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-data text-xs uppercase tracking-wider text-muted-foreground mb-1">
+                            Detection Result
+                          </p>
+                          <p className="font-data text-sm font-semibold">
+                            {predictionResult.star_name}
+                            <span className="ml-2 text-muted-foreground font-normal">
+                              / {predictionResult.mission}
+                            </span>
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {predictionResult.cached && (
+                            <span className="bg-muted px-2 py-0.5 rounded-md font-data text-[10px] uppercase tracking-wider text-muted-foreground">
+                              CACHED
+                            </span>
+                          )}
+                          <span
+                            className={`px-2 py-1 rounded-md font-data text-[10px] uppercase tracking-wider ${
+                              predictionResult.verdict === "TRANSIT_DETECTED"
+                                ? "bg-success/15 text-success"
+                                : "bg-warning/15 text-warning"
+                            }`}
+                          >
+                            {predictionResult.verdict.replace("_", " ")}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Score */}
+                      <div className="flex items-end gap-3">
+                        <span
+                          className={`font-data text-4xl font-semibold ${
+                            predictionResult.verdict === "TRANSIT_DETECTED" ? "text-success" : "text-warning"
+                          }`}
+                        >
+                          {predictionResult.percentage.toFixed(1)}%
+                        </span>
+                        <span className="font-data text-xs text-muted-foreground mb-1">
+                          transit confidence
+                        </span>
+                      </div>
+
+                      {/* Score bar */}
+                      <div className="w-full bg-muted rounded-full h-1.5">
+                        <div
+                          className={`h-1.5 rounded-full transition-all duration-700 ${
+                            predictionResult.verdict === "TRANSIT_DETECTED" ? "bg-success" : "bg-warning"
+                          }`}
+                          style={{ width: `${predictionResult.percentage}%` }}
+                        />
+                      </div>
+
+                      {/* Metrics grid */}
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        {[
+                          {
+                            icon: Radio,
+                            label: "Period",
+                            value: predictionResult.period_days != null
+                              ? `${predictionResult.period_days.toFixed(3)} d`
+                              : "—",
+                          },
+                          {
+                            icon: Zap,
+                            label: "Transit Depth",
+                            value: predictionResult.transit_depth_estimate != null
+                              ? `${(predictionResult.transit_depth_estimate * 100).toFixed(4)}%`
+                              : "—",
+                          },
+                          {
+                            icon: Activity,
+                            label: "Datapoints",
+                            value: predictionResult.num_datapoints != null
+                              ? predictionResult.num_datapoints.toLocaleString()
+                              : "—",
+                          },
+                          {
+                            icon: Clock,
+                            label: "Proc. Time",
+                            value: `${predictionResult.processing_time_seconds.toFixed(1)}s`,
+                          },
+                        ].map((m) => (
+                          <div key={m.label} className="bg-muted p-3 rounded-md">
+                            <div className="flex items-center gap-1 mb-1">
+                              <m.icon className="h-3 w-3 text-muted-foreground" />
+                              <p className="font-data text-[10px] text-muted-foreground uppercase tracking-wider">
+                                {m.label}
+                              </p>
+                            </div>
+                            <p className="font-data text-sm font-semibold">{m.value}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <p className="font-data text-[10px] text-muted-foreground">
+                        {new Date(predictionResult.timestamp).toLocaleString()} UTC
+                      </p>
+                    </>
+                  )}
                 </motion.div>
               )}
             </TabsContent>
@@ -700,58 +851,85 @@ const Dashboard = () => {
                       </p>
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full font-data text-xs">
-                        <thead>
-                          <tr className="border-b border-border text-muted-foreground uppercase tracking-wider">
-                            <th className="text-left py-3 px-4 font-medium">Star_ID</th>
-                            <th className="text-left py-3 px-4 font-medium">Mission</th>
-                            <th className="text-left py-3 px-4 font-medium">Period (d)</th>
-                            <th className="text-left py-3 px-4 font-medium">Confidence</th>
-                            <th className="text-left py-3 px-4 font-medium">Verdict</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {historyData.items.map((row) => (
-                            <tr
-                              key={row.id}
-                              className="border-b border-border hover:bg-muted/50 transition-colors"
+                    <div className="space-y-1">
+                      {Object.entries(
+                        historyData.items.reduce((acc, item) => {
+                          if (!acc[item.star_name])
+                            acc[item.star_name] = { mission: item.mission, items: [] };
+                          acc[item.star_name].items.push(item);
+                          return acc;
+                        }, {} as Record<string, { mission: string; items: HistoryItem[] }>)
+                      ).map(([starName, group]) => {
+                        const isExpanded = expandedStars.has(starName);
+                        const hasTransit = group.items.some((i) => i.verdict === "TRANSIT_DETECTED");
+                        return (
+                          <div key={starName} className="border border-border rounded-md overflow-hidden">
+                            {/* Star header row */}
+                            <button
+                              onClick={() => toggleStar(starName)}
+                              className="w-full flex items-center gap-3 px-4 py-3 bg-muted/30 hover:bg-muted/60 transition-colors text-left"
                             >
-                              <td className="py-3 px-4 text-foreground font-medium">
-                                {row.star_name}
-                              </td>
-                              <td className="py-3 px-4">
-                                <span className="bg-muted px-2 py-0.5 rounded-md text-[10px] uppercase tracking-wider">
-                                  {row.mission}
-                                </span>
-                              </td>
-                              <td className="py-3 px-4 text-muted-foreground">
-                                {row.period_days != null ? row.period_days.toFixed(3) : "—"}
-                              </td>
-                              <td className="py-3 px-4">
-                                <span
-                                  className={
-                                    row.percentage >= 50 ? "text-success" : "text-warning"
-                                  }
-                                >
-                                  {row.percentage.toFixed(1)}%
-                                </span>
-                              </td>
-                              <td className="py-3 px-4">
-                                <span
-                                  className={`text-[10px] uppercase tracking-wider ${
-                                    row.verdict === "TRANSIT_DETECTED"
-                                      ? "text-success"
-                                      : "text-warning"
-                                  }`}
-                                >
-                                  {row.verdict.replace("_", " ")}
-                                </span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                              {isExpanded
+                                ? <ChevronDown className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                                : <ChevronRight className="h-3 w-3 text-muted-foreground flex-shrink-0" />
+                              }
+                              <span className="font-data text-xs font-semibold flex-1">{starName}</span>
+                              <span className="bg-muted px-2 py-0.5 rounded-md font-data text-[10px] uppercase tracking-wider text-muted-foreground mr-3">
+                                {group.mission}
+                              </span>
+                              <span className="font-data text-[10px] text-muted-foreground mr-3">
+                                {group.items.length} detection{group.items.length !== 1 ? "s" : ""}
+                              </span>
+                              <span
+                                className={`font-data text-[10px] uppercase tracking-wider ${
+                                  hasTransit ? "text-success" : "text-warning"
+                                }`}
+                              >
+                                {hasTransit ? "TRANSIT" : "NO TRANSIT"}
+                              </span>
+                            </button>
+
+                            {/* Planet rows */}
+                            {isExpanded && (
+                              <div className="border-t border-border">
+                                {group.items.map((row, idx) => (
+                                  <div
+                                    key={row.id}
+                                    className={`flex items-center gap-4 px-8 py-2.5 font-data text-xs ${
+                                      idx < group.items.length - 1 ? "border-b border-border/40" : ""
+                                    } hover:bg-muted/30 transition-colors`}
+                                  >
+                                    <span className="text-muted-foreground w-36 flex-shrink-0">
+                                      Planet Candidate {idx + 1}
+                                    </span>
+                                    <span className="text-muted-foreground flex-1">
+                                      {row.period_days != null ? `${row.period_days.toFixed(3)} d` : "—"}
+                                    </span>
+                                    <span
+                                      className={
+                                        row.percentage >= 70
+                                          ? "text-success"
+                                          : row.percentage >= 40
+                                          ? "text-warning"
+                                          : "text-destructive"
+                                      }
+                                    >
+                                      {row.percentage.toFixed(1)}%
+                                    </span>
+                                    <span
+                                      className={`text-[10px] uppercase tracking-wider w-32 text-right ${
+                                        row.verdict === "TRANSIT_DETECTED" ? "text-success" : "text-warning"
+                                      }`}
+                                    >
+                                      {row.verdict.replace("_", " ")}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>

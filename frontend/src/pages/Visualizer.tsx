@@ -1,7 +1,7 @@
 import { useState, useRef, Suspense } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import { Search, Terminal, ArrowLeft } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -165,8 +165,12 @@ const Visualizer = () => {
           </Button>
           <div className="flex items-center gap-2">
             <div onClick={() => navigate("/")} className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
-              <Terminal className="h-4 w-4 text-foreground" />
-              <span className="font-data text-xs font-semibold tracking-wide">COSMIK_AI</span>
+              <img
+                src="/cosmik-ai.png"
+                alt="cosmik.ai"
+                className="h-5 w-5"
+              />
+              <span className="font-data text-xs font-semibold tracking-wide">cosmik.ai</span>
             </div>
             <span className="font-data text-xs text-muted-foreground">/ VISUALIZER</span>
           </div>

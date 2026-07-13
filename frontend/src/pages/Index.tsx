@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Database, Cpu, LineChart, Terminal, ArrowRight } from "lucide-react";
+import { Database, Cpu, LineChart, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const features = [
@@ -29,8 +29,12 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-border px-6 py-4">
         <div className="flex items-center gap-3">
-          <Terminal className="h-5 w-5 text-foreground" />
-          <span className="font-data text-sm font-semibold tracking-wide">COSMIK_AI</span>
+          <img
+            src="/cosmik-ai.png"
+            alt="cosmik.ai"
+            className="h-6 w-6"
+          />
+          <span className="font-data text-sm font-semibold tracking-wide">cosmik.ai</span>
         </div>
       </header>
 
@@ -42,10 +46,15 @@ const Index = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <p className="font-data text-xs text-muted-foreground uppercase tracking-widest mb-4">
+            <img
+              src="/cosmik-ai.png"
+              alt="cosmik.ai"
+              className="h-56 w-56 mb-0"
+            />
+            <p className="font-data text-xs text-muted-foreground uppercase tracking-widest mb-6">
               Astrophysics Data Pipeline v2.4.1
             </p>
-            <h1 className="text-3xl md:text-4xl font-semibold leading-tight tracking-tight mb-6">
+            <h1 className="text-3xl md:text-4xl font-semibold leading-tight tracking-tight mb-6 mt-2">
               Cosmik AI: Stellar Photometry & Transit Analysis
             </h1>
             <div className="max-w-3xl text-sm text-muted-foreground leading-relaxed space-y-4 mb-10">
